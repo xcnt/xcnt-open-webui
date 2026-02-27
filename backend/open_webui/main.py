@@ -96,6 +96,7 @@ from open_webui.routers import (
     users,
     utils,
     scim,
+    sentry
 )
 
 from open_webui.routers.retrieval import (
@@ -1545,7 +1546,7 @@ app.include_router(utils.router, prefix="/api/v1/utils", tags=["utils"])
 if ENABLE_SCIM:
     app.include_router(scim.router, prefix="/api/v1/scim/v2", tags=["scim"])
 
-
+app.include_router(sentry.router, prefix="/api/v1/sentry", tags=["sentry"])
 try:
     audit_level = AuditLevel(AUDIT_LOG_LEVEL)
 except ValueError as e:

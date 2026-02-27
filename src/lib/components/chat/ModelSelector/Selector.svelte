@@ -56,34 +56,6 @@
 		[key: string]: any;
 	}> = [];
 
-	// Model name mapping
-	const MODEL_NAME_MAP: Record<string, string> = {
-		'gpt-5.2': 'Smart All-Rounder',
-		'claude-sonnet-4-5': 'Autonomous Builder',
-		'gemini-3-pro-preview': 'Deep Thinker'
-	};
-
-	// Map model names after API call
-	function mapModelNames(
-		models: Array<{ label: string; value: string; model: Model; [key: string]: any }>
-	): Array<{ label: string; value: string; model: Model; [key: string]: any }> {
-		return models.map((item) => {
-			const mappedName =
-				item.model && MODEL_NAME_MAP[item.model.name as keyof typeof MODEL_NAME_MAP];
-			if (mappedName) {
-				return {
-					...item,
-					label: mappedName,
-					model: {
-						...item.model,
-						name: mappedName
-					}
-				};
-			}
-			return item;
-		});
-	}
-
 	export let className = 'w-[32rem]';
 	export let triggerClassName = 'text-lg';
 
@@ -362,7 +334,6 @@
 	onMount(async () => {
 		if (items) {
 			// Map model names if needed
-			items = mapModelNames(items);
 			tags = items
 				.filter((item) => !(item.model?.info?.meta?.hidden ?? false))
 				.flatMap((item) => item.model?.tags ?? [])
