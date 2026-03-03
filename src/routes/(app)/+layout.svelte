@@ -10,7 +10,6 @@
 	import { fade } from 'svelte/transition';
 
 	import { getModels, getToolServersData, getVersionUpdates } from '$lib/apis';
-	import { fetchSentryDSN } from '$lib/apis/sentry';
 
 	import { getTools } from '$lib/apis/tools';
 	import { getBanners } from '$lib/apis/configs';
@@ -18,8 +17,6 @@
 
 	import { WEBUI_VERSION } from '$lib/constants';
 	import { compareVersion } from '$lib/utils';
-
-	import * as Sentry from '@sentry/sveltekit';
 
 	import {
 		config,
@@ -55,35 +52,6 @@
 	let localDBChats = [];
 
 	let version;
-
-	onMount(async () => {
-		const SENTRY_DSN = await fetchSentryDSN(localStorage.token).catch((error) => {
-			console.error('Failed to fetch Sentry DSN:', error);
-			return null;
-		});
-		if (SENTRY_DSN) {
-			Sentry.init({
-				dsn: SENTRY_DSN,
-				integrations: [
-					Sentry.feedbackIntegration({
-						showEmail: false,
-						nameLabel: 'Name (Optional)',
-						buttonLabel: 'Feedback',
-						triggerLabel: 'Feedback',
-						submitButtonLabel: 'Send Feedback',
-						formTitle: 'Send Feedback',
-						autoInject: true
-					})
-				]
-			});
-			// Get the instance returned by `feedbackIntegration()`
-			const feedback = Sentry.getFeedback();
-			// Create and render the button
-			const widget = feedback?.createWidget();
-			// Later, when it's time to clean up:
-			widget?.removeFromDom();
-		}
-	});
 
 	const clearChatInputStorage = () => {
 		const chatInputKeys = Object.keys(localStorage).filter((key) => key.startsWith('chat-input'));

@@ -45,6 +45,7 @@
 	import { createNewFolder, getFolders, updateFolderParentIdById } from '$lib/apis/folders';
 	import { checkActiveChats } from '$lib/apis/tasks';
 	import { WEBUI_API_BASE_URL, WEBUI_BASE_URL } from '$lib/constants';
+	import { fetchSentryDSN } from '$lib/apis/sentry';
 
 	import ArchivedChatsModal from './ArchivedChatsModal.svelte';
 	import UserMenu from './Sidebar/UserMenu.svelte';
@@ -66,6 +67,7 @@
 	import Note from '../icons/Note.svelte';
 	import { slide } from 'svelte/transition';
 	import HotkeyHint from '../common/HotkeyHint.svelte';
+	import * as Sentry from '@sentry/sveltekit';
 
 	const BREAKPOINT = 768;
 
@@ -415,6 +417,49 @@
 	};
 
 	let unsubscribers = [];
+	let feedbackInitPromise: Promise<boolean> | null = null;
+
+	const initSentryFeedback = async () => {
+		if (Sentry.getFeedback()) {
+			return true;
+		}
+
+		if (feedbackInitPromise) {
+			return await feedbackInitPromise;
+		}
+
+		feedbackInitPromise = (async () => {
+			const SENTRY_DSN = await fetchSentryDSN().catch((error) => {
+				console.error('Failed to fetch Sentry DSN:', error);
+				return null;
+			});
+
+			if (!SENTRY_DSN) {
+				return false;
+			}
+
+			Sentry.init({
+				dsn: SENTRY_DSN,
+				integrations: [
+					Sentry.feedbackIntegration({
+						showEmail: false,
+						nameLabel: 'Name (Optional)',
+						buttonLabel: 'Feedback',
+						triggerLabel: 'Feedback',
+						submitButtonLabel: 'Send Feedback',
+						formTitle: 'Send Feedback',
+						autoInject: false
+					})
+				]
+			});
+
+			return Boolean(Sentry.getFeedback());
+		})();
+
+		const initialized = await feedbackInitPromise;
+		feedbackInitPromise = null;
+		return initialized;
+	};
 
 	onMount(async () => {
 		try {
@@ -510,6 +555,9 @@
 		// Listen for real-time chat:active events via the events channel
 		$socket?.off('events', chatActiveEventHandler);
 		$socket?.on('events', chatActiveEventHandler);
+
+		// Initialize Sentry feedback
+		await initSentryFeedback();
 	});
 
 	// Handler for chat:active events (defined outside onMount for proper cleanup)
@@ -586,6 +634,22 @@
 		}
 
 		await tick();
+	};
+
+	const openFeedbackForm = async () => {
+		const initialized = await initSentryFeedback();
+		if (!initialized) {
+			return;
+		}
+
+		const feedback = Sentry.getFeedback();
+		if (!feedback) {
+			return;
+		}
+
+		const dialog = await feedback.createForm();
+		dialog.appendToDom();
+		dialog.open();
 	};
 
 	const isWindows = /Windows/i.test(navigator.userAgent);
@@ -825,48 +889,98 @@
 						</Tooltip>
 					</div>
 				{/if}
+
+				<div class="">
+					<Tooltip content={$i18n.t('Feedback')} placement="right">
+						<button
+							class="cursor-pointer flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition group"
+							on:click={(e) => {
+								e.stopImmediatePropagation();
+								e.preventDefault();
+								openFeedbackForm();
+							}}
+							aria-label={$i18n.t('Feedback')}
+						>
+							<div class="self-center flex items-center justify-center size-9">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="1.5"
+									stroke="currentColor"
+									class="size-4.5"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+									/>
+								</svg>
+							</div>
+						</button>
+					</Tooltip>
+				</div>
 			</div>
 		</button>
-
 		<div>
 			<div>
 				<div class=" py-2 flex justify-center items-center">
 					{#if $user !== undefined && $user !== null}
-						<UserMenu
-							role={$user?.role}
-							profile={$config?.features?.enable_user_status ?? true}
-							showActiveUsers={false}
-							on:show={(e) => {
-								if (e.detail === 'archived-chat') {
-									showArchivedChats.set(true);
-								}
-							}}
-						>
-							<div
-								class=" cursor-pointer flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition group"
+						<div class="flex items-center gap-1">
+							<UserMenu
+								role={$user?.role}
+								profile={$config?.features?.enable_user_status ?? true}
+								showActiveUsers={false}
+								on:show={(e) => {
+									if (e.detail === 'archived-chat') {
+										showArchivedChats.set(true);
+									}
+								}}
 							>
-								<div class="self-center relative">
-									<img
-										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class=" size-7 object-cover rounded-full"
-										alt={$i18n.t('Open User Profile Menu')}
-										aria-label={$i18n.t('Open User Profile Menu')}
-									/>
+								<div
+									class=" cursor-pointer flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition group"
+								>
+									<div class="self-center relative">
+										<img
+											src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+											class=" size-7 object-cover rounded-full"
+											alt={$i18n.t('Open User Profile Menu')}
+											aria-label={$i18n.t('Open User Profile Menu')}
+										/>
 
-									{#if $config?.features?.enable_user_status}
-										<div class="absolute -bottom-0.5 -right-0.5">
-											<span class="relative flex size-2.5">
-												<span
-													class="relative inline-flex size-2.5 rounded-full {true
-														? 'bg-green-500'
-														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
-												></span>
-											</span>
-										</div>
-									{/if}
+										{#if $config?.features?.enable_user_status}
+											<div class="absolute -bottom-0.5 -right-0.5">
+												<span class="relative flex size-2.5">
+													<span
+														class="relative inline-flex size-2.5 rounded-full {true
+															? 'bg-green-500'
+															: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
+													></span>
+												</span>
+											</div>
+										{/if}
+									</div>
 								</div>
-							</div>
-						</UserMenu>
+							</UserMenu>
+							<button
+								class="flex rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition group cursor-pointer"
+								on:click={openFeedbackForm}
+								aria-label={$i18n.t('Send Feedback')}
+							>
+								<div class="self-center flex items-center justify-center size-7">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="size-4.5 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition"
+									>
+										<path
+											d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.782 60.782 0 006.176-11.164c1.586-2.686 4.243-4.5 7.25-4.5s5.664 1.814 7.25 4.5c.988 1.678 1.841 3.47 2.566 5.316a.75.75 0 001.432-.514 62.255 62.255 0 00-2.566-5.316 9.423 9.423 0 00-8.084-5.016c-2.266 0-4.357 1.052-5.894 2.845a.75.75 0 00-.878.044l-2.117-6.86h-5.76l-2.117 6.86a.75.75 0 00-.878-.044c-1.537-1.793-3.628-2.845-5.894-2.845a9.423 9.423 0 00-8.084 5.016A62.255 62.255 0 003.478 2.405z"
+										/>
+									</svg>
+								</div>
+							</button>
+						</div>
 					{/if}
 				</div>
 			</div>
@@ -1053,6 +1167,35 @@
 							</a>
 						</div>
 					{/if}
+
+					<div class="px-[0.4375rem] flex justify-center text-gray-800 dark:text-gray-200">
+						<button
+							class="grow flex items-center space-x-3 rounded-2xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+							on:click={openFeedbackForm}
+							aria-label={$i18n.t('Feedback')}
+						>
+							<div class="self-center">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke-width="2"
+									stroke="currentColor"
+									class="size-4.5"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+									/>
+								</svg>
+							</div>
+
+							<div class="flex self-center translate-y-[0.5px]">
+								<div class="self-center text-sm font-primary">{$i18n.t('Feedback')}</div>
+							</div>
+						</button>
+					</div>
 				</div>
 
 				{#if ($models ?? []).length > 0 && (($settings?.pinnedModels ?? []).length > 0 || $config?.default_pinned_models)}
@@ -1400,42 +1543,64 @@
 				></div>
 				<div class="flex flex-col font-primary">
 					{#if $user !== undefined && $user !== null}
-						<UserMenu
-							role={$user?.role}
-							profile={$config?.features?.enable_user_status ?? true}
-							showActiveUsers={false}
-							on:show={(e) => {
-								if (e.detail === 'archived-chat') {
-									showArchivedChats.set(true);
-								}
-							}}
+						<div
+							class="flex items-center justify-between px-1.5 py-2 hover:bg-gray-100/50 dark:hover:bg-gray-900/50 rounded-2xl transition"
 						>
-							<div
-								class=" flex items-center rounded-2xl py-2 px-1.5 w-full hover:bg-gray-100/50 dark:hover:bg-gray-900/50 transition"
+							<UserMenu
+								role={$user?.role}
+								profile={$config?.features?.enable_user_status ?? true}
+								showActiveUsers={false}
+								on:show={(e) => {
+									if (e.detail === 'archived-chat') {
+										showArchivedChats.set(true);
+									}
+								}}
 							>
-								<div class=" self-center mr-3 relative">
-									<img
-										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class=" size-7 object-cover rounded-full"
-										alt={$i18n.t('Open User Profile Menu')}
-										aria-label={$i18n.t('Open User Profile Menu')}
-									/>
+								<div
+									class=" flex items-center rounded-2xl py-2 w-full hover:bg-transparent dark:hover:bg-transparent transition"
+								>
+									<div class=" self-center mr-3 relative">
+										<img
+											src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+											class=" size-7 object-cover rounded-full"
+											alt={$i18n.t('Open User Profile Menu')}
+											aria-label={$i18n.t('Open User Profile Menu')}
+										/>
 
-									{#if $config?.features?.enable_user_status}
-										<div class="absolute -bottom-0.5 -right-0.5">
-											<span class="relative flex size-2.5">
-												<span
-													class="relative inline-flex size-2.5 rounded-full {true
-														? 'bg-green-500'
-														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
-												></span>
-											</span>
-										</div>
-									{/if}
+										{#if $config?.features?.enable_user_status}
+											<div class="absolute -bottom-0.5 -right-0.5">
+												<span class="relative flex size-2.5">
+													<span
+														class="relative inline-flex size-2.5 rounded-full {true
+															? 'bg-green-500'
+															: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
+													></span>
+												</span>
+											</div>
+										{/if}
+									</div>
+									<div class=" self-center font-medium">{$user?.name}</div>
 								</div>
-								<div class=" self-center font-medium">{$user?.name}</div>
-							</div>
-						</UserMenu>
+							</UserMenu>
+							<button
+								class="flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition group cursor-pointer"
+								on:click={openFeedbackForm}
+								aria-label={$i18n.t('Send Feedback')}
+							>
+								<div class="self-center flex items-center justify-center size-7">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+										class="size-4.5 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition"
+									>
+										<path
+											d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.782 60.782 0 006.176-11.164c1.586-2.686 4.243-4.5 7.25-4.5s5.664 1.814 7.25 4.5c.988 1.678 1.841 3.47 2.566 5.316a.75.75 0 001.432-.514 62.255 62.255 0 00-2.566-5.316 9.423 9.423 0 00-8.084-5.016c-2.266 0-4.357 1.052-5.894 2.845a.75.75 0 00-.878.044l-2.117-6.86h-5.76l-2.117 6.86a.75.75 0 00-.878-.044c-1.537-1.793-3.628-2.845-5.894-2.845a9.423 9.423 0 00-8.084 5.016A62.255 62.255 0 003.478 2.405z"
+										/>
+									</svg>
+								</div>
+							</button>
+						</div>
 					{/if}
 				</div>
 			</div>
