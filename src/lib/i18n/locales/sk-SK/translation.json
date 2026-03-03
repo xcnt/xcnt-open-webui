@@ -1643,6 +1643,7 @@
 	"semantic": "",
 	"Send": "Odoslať",
 	"Send a Message": "Odoslať správu",
+	"Send Feedback": "",
 	"Send message": "Odoslať správu",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Odošle `stream_options: { include_usage: true }` v žiadosti. Podporovaní poskytovatelia vrátia informácie o využití tokenov v odpovedi, keď je táto možnosť nastavená.",

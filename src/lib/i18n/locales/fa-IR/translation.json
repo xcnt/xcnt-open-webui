@@ -1641,6 +1641,7 @@
 	"semantic": "معنایی",
 	"Send": "ارسال",
 	"Send a Message": "ارسال یک پیام",
+	"Send Feedback": "",
 	"Send message": "ارسال پیام",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "ارسال `stream_options: { include_usage: true }` در درخواست.\nارائه دهندگان پشتیبانی شده در صورت تنظیم، اطلاعات استفاده از توکن را در پاسخ برمی گردانند.",

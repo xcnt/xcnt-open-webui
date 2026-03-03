@@ -1641,6 +1641,7 @@
 	"semantic": "Semaattinen",
 	"Send": "Lähetä",
 	"Send a Message": "Lähetä viesti",
+	"Send Feedback": "",
 	"Send message": "Lähetä viesti",
 	"Send now": "Lähetä nyt",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Lähettää `stream_options: { include_usage: true }` pyynnössä.\nTuetut tarjoajat palauttavat tokenkäyttötiedot vastauksessa, kun se on asetettu.",

@@ -1641,6 +1641,7 @@
 	"semantic": "semantic",
 	"Send": "Saada",
 	"Send a Message": "Saada sõnum",
+	"Send Feedback": "",
 	"Send message": "Saada sõnum",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Saadab `stream_options: { include_usage: true }` päringus.\nToetatud teenusepakkujad tagastavad määramisel vastuses tokeni kasutuse teabe.",

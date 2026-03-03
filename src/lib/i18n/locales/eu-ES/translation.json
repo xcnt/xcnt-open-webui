@@ -1641,6 +1641,7 @@
 	"semantic": "",
 	"Send": "Bidali",
 	"Send a Message": "Bidali mezu bat",
+	"Send Feedback": "",
 	"Send message": "Bidali mezua",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Bidaltzen du `stream_options: { include_usage: true }` eskaeran.\nOnartutako hornitzaileek token erabileraren informazioa itzuliko dute erantzunean ezarrita dagoenean.",

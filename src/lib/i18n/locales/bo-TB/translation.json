@@ -1640,6 +1640,7 @@
 	"semantic": "",
 	"Send": "གཏོང་བ།",
 	"Send a Message": "འཕྲིན་ཞིག་གཏོང་བ།",
+	"Send Feedback": "",
 	"Send message": "འཕྲིན་གཏོང་བ།",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "རེ་ཞུའི་ནང་ `stream_options: { include_usage: true }` གཏོང་བ།\nབཀོད་སྒྲིག་བྱས་ཚེ། རྒྱབ་སྐྱོར་ཡོད་པའི་མཁོ་སྤྲོད་པས་ལན་ནང་ཊོཀ་ཀེན་བེད་སྤྱོད་ཀྱི་གནས་ཚུལ་ཕྱིར་སློག་བྱེད་ངེས།",

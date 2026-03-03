@@ -1641,6 +1641,7 @@
 	"semantic": "",
 	"Send": "",
 	"Send a Message": "Magpadala ug mensahe",
+	"Send Feedback": "",
 	"Send message": "Magpadala ug mensahe",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "",

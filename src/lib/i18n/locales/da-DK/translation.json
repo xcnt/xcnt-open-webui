@@ -1641,6 +1641,7 @@
 	"semantic": "semantisk",
 	"Send": "Send",
 	"Send a Message": "Send en besked",
+	"Send Feedback": "",
 	"Send message": "Send besked",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Sender `stream_options: { include_usage: true }` i forespørgslen.\nUnderstøttede udbydere vil returnere tokenforbrugsinformation i svaret, når det er indstillet.",

@@ -1641,6 +1641,7 @@
 	"semantic": "სემანტიკური",
 	"Send": "გაგზავნა",
 	"Send a Message": "შეტყობინების გაგზავნა",
+	"Send Feedback": "",
 	"Send message": "შეტყობინების გაგზავნა",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "",

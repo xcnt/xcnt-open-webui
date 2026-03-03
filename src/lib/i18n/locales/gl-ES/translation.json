@@ -1641,6 +1641,7 @@
 	"semantic": "",
 	"Send": "Enviar",
 	"Send a Message": "Enviar un mensaxe",
+	"Send Feedback": "",
 	"Send message": "Enviar mensaxe",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Envia `stream_options: { include_usage: true }` en a solicitud.\nLos proveedores admitidos devolverán información de uso do token en a resposta cuando se establezca.",

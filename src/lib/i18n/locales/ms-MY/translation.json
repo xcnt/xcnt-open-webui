@@ -1640,6 +1640,7 @@
 	"semantic": "",
 	"Send": "Hantar",
 	"Send a Message": "Hantar Pesanan",
+	"Send Feedback": "",
 	"Send message": "Hantar pesanan",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "",

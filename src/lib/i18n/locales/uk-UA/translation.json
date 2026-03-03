@@ -1643,6 +1643,7 @@
 	"semantic": "",
 	"Send": "Надіслати",
 	"Send a Message": "Надіслати повідомлення",
+	"Send Feedback": "",
 	"Send message": "Надіслати повідомлення",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Відправляє `stream_options: { include_usage: true }` у запиті.\nПідтримувані постачальники повернуть інформацію про використання токену у відповіді, якщо вона встановлена.",

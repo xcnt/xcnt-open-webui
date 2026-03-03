@@ -1640,6 +1640,7 @@
 	"semantic": "",
 	"Send": "Kirim",
 	"Send a Message": "Kirim Pesan",
+	"Send Feedback": "",
 	"Send message": "Kirim pesan",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "",

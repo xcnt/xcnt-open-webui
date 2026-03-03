@@ -1642,6 +1642,7 @@
 	"semantic": "",
 	"Send": "Пошаљи",
 	"Send a Message": "Пошаљи поруку",
+	"Send Feedback": "",
 	"Send message": "Пошаљи поруку",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "",

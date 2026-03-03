@@ -1641,6 +1641,7 @@
 	"semantic": "",
 	"Send": "بھیجیں",
 	"Send a Message": "پیغام بھیجیں",
+	"Send Feedback": "",
 	"Send message": "پیغام بھیجیں",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "درخواست میں `stream_options: { include_usage: true }` بھیجتا ہے\nمعاون فراہم کنندگان، جب سیٹ کیا جاتا ہے تو، جواب میں ٹوکن کے استعمال کی معلومات واپس کر دیں گے",

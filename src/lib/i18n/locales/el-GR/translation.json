@@ -1641,6 +1641,7 @@
 	"semantic": "",
 	"Send": "Αποστολή",
 	"Send a Message": "Αποστολή Μηνύματος",
+	"Send Feedback": "",
 	"Send message": "Αποστολή μηνύματος",
 	"Send now": "",
 	"Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.": "Στέλνει `stream_options: { include_usage: true }` στο αίτημα.\nΟι υποστηριζόμενοι πάροχοι θα επιστρέψουν πληροφορίες χρήσης token στην απάντηση όταν ρυθμιστεί.",
