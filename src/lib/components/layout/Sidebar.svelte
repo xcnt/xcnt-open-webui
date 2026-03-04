@@ -1543,64 +1543,42 @@
 				></div>
 				<div class="flex flex-col font-primary">
 					{#if $user !== undefined && $user !== null}
-						<div
-							class="flex items-center justify-between px-1.5 py-2 hover:bg-gray-100/50 dark:hover:bg-gray-900/50 rounded-2xl transition"
+						<UserMenu
+							role={$user?.role}
+							profile={$config?.features?.enable_user_status ?? true}
+							showActiveUsers={false}
+							on:show={(e) => {
+								if (e.detail === 'archived-chat') {
+									showArchivedChats.set(true);
+								}
+							}}
 						>
-							<UserMenu
-								role={$user?.role}
-								profile={$config?.features?.enable_user_status ?? true}
-								showActiveUsers={false}
-								on:show={(e) => {
-									if (e.detail === 'archived-chat') {
-										showArchivedChats.set(true);
-									}
-								}}
+							<div
+								class=" flex items-center rounded-2xl py-2 w-full hover:bg-transparent dark:hover:bg-transparent transition"
 							>
-								<div
-									class=" flex items-center rounded-2xl py-2 w-full hover:bg-transparent dark:hover:bg-transparent transition"
-								>
-									<div class=" self-center mr-3 relative">
-										<img
-											src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
-											class=" size-7 object-cover rounded-full"
-											alt={$i18n.t('Open User Profile Menu')}
-											aria-label={$i18n.t('Open User Profile Menu')}
-										/>
+								<div class=" self-center mr-3 relative">
+									<img
+										src={`${WEBUI_API_BASE_URL}/users/${$user?.id}/profile/image`}
+										class=" size-7 object-cover rounded-full"
+										alt={$i18n.t('Open User Profile Menu')}
+										aria-label={$i18n.t('Open User Profile Menu')}
+									/>
 
-										{#if $config?.features?.enable_user_status}
-											<div class="absolute -bottom-0.5 -right-0.5">
-												<span class="relative flex size-2.5">
-													<span
-														class="relative inline-flex size-2.5 rounded-full {true
-															? 'bg-green-500'
-															: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
-													></span>
-												</span>
-											</div>
-										{/if}
-									</div>
-									<div class=" self-center font-medium">{$user?.name}</div>
+									{#if $config?.features?.enable_user_status}
+										<div class="absolute -bottom-0.5 -right-0.5">
+											<span class="relative flex size-2.5">
+												<span
+													class="relative inline-flex size-2.5 rounded-full {true
+														? 'bg-green-500'
+														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
+												></span>
+											</span>
+										</div>
+									{/if}
 								</div>
-							</UserMenu>
-							<button
-								class="flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-gray-850 transition group cursor-pointer"
-								on:click={openFeedbackForm}
-								aria-label={$i18n.t('Send Feedback')}
-							>
-								<div class="self-center flex items-center justify-center size-7">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 24 24"
-										fill="currentColor"
-										class="size-4.5 text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-100 transition"
-									>
-										<path
-											d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.782 60.782 0 006.176-11.164c1.586-2.686 4.243-4.5 7.25-4.5s5.664 1.814 7.25 4.5c.988 1.678 1.841 3.47 2.566 5.316a.75.75 0 001.432-.514 62.255 62.255 0 00-2.566-5.316 9.423 9.423 0 00-8.084-5.016c-2.266 0-4.357 1.052-5.894 2.845a.75.75 0 00-.878.044l-2.117-6.86h-5.76l-2.117 6.86a.75.75 0 00-.878-.044c-1.537-1.793-3.628-2.845-5.894-2.845a9.423 9.423 0 00-8.084 5.016A62.255 62.255 0 003.478 2.405z"
-										/>
-									</svg>
-								</div>
-							</button>
-						</div>
+								<div class=" self-center font-medium">{$user?.name}</div>
+							</div>
+						</UserMenu>
 					{/if}
 				</div>
 			</div>
